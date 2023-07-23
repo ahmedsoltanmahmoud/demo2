@@ -1,9 +1,35 @@
 name: Test project
-on: workflow_dispatch
+on: [push,workflow_dispatch]
 jobs:
-  info:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: get context
-        run: echo "${{toJson(github)}}"
-     
+      - name: get the code
+        uses: actions/checkout@v3
+      - name: install nodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: install dependencies
+        run: npm ci
+      - name: run test
+        run: npm test
+
+  deploy:
+    needs: test        
+    runs-on: ubuntu-latest    
+    steps:
+      - name: get the code
+        uses: actions/checkout@v3
+      - name: install nodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: install dependencies
+        run: npm ci
+      - name: build project
+        run: npm run build
+      - name: build project
+        run: echo "deploy.."
+
+
